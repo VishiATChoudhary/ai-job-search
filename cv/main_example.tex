@@ -3,30 +3,30 @@
 %% Use as a master reference when tailoring role-specific CVs.
 %%
 %% SETUP: Run /setup to populate this with your actual information.
-%% Compile with: lualatex main_example.tex
-%% (pdflatex often fails on modern MiKTeX with fontawesome5 font-expansion errors.)
+%% Compile with: tectonic main_example.tex
+%% (nosymbols avoids moderncv's fontawesome5 icons, which crash Tectonic 0.16.x;
+%%  contact details render as letter labels M/E instead of icons.)
 
-\documentclass[11pt,a4paper,sans]{moderncv}
+\documentclass[11pt,a4paper,sans,nosymbols]{moderncv}
 \moderncvstyle{banking}
 \moderncvcolor{blue}
 
-% Force both first and last name AND section headings to render in moderncv
-% blue (color1). Default banking on lualatex+MiKTeX leaves these black, which
-% looks inconsistent with the rest of the blue accent scheme.
-\renewcommand*{\firstnamestyle}[1]{{\fontsize{34}{36}\bfseries\upshape\color{color1}#1}}
-\renewcommand*{\lastnamestyle}[1]{{\fontsize{34}{36}\bfseries\upshape\color{color1}#1}}
+% Force the name AND section headings to render in moderncv blue (color1).
+% moderncv 2.x uses \namestyle (the old \firstnamestyle/\lastnamestyle were
+% removed); default banking leaves these black, inconsistent with the blue scheme.
+\renewcommand*{\namestyle}[1]{{\fontsize{34}{36}\bfseries\upshape\color{color1}#1}}
 \renewcommand*{\sectionstyle}[1]{{\sectionfont\color{color1}#1}}
 
-\usepackage[utf8]{inputenc}
-\usepackage{hyperref}
-\hypersetup{
+% No inputenc: Tectonic/XeTeX is native UTF-8. moderncv 2.x loads hyperref
+% itself at end of preamble, so we don't reload it and defer \hypersetup.
+\AtBeginDocument{\hypersetup{
     colorlinks=true,
     linkcolor=blue,
     filecolor=magenta,
     urlcolor=blue,
     pdftitle={[YOUR_NAME] - CV},
     pdfpagemode=FullScreen,
-}
+}}
 \usepackage[scale=0.80]{geometry}
 \usepackage{import}
 

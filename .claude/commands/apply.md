@@ -182,12 +182,12 @@ After all edits are applied, the two files on disk are the final drafts.
 ### 5a. Compile
 
 ```bash
-cd cv && lualatex -interaction=nonstopmode main_<company>.tex
-cd ../cover_letters && xelatex -interaction=nonstopmode cover_<company>_<role>.tex
+cd cv && tectonic main_<company>.tex
+cd ../cover_letters && tectonic cover_<company>_<role>.tex
 ```
 
-- CV uses **lualatex** — pdflatex fails on modern MiKTeX with fontawesome5 font-expansion errors. lualatex handles the same sources cleanly.
-- Cover letter uses **xelatex** — cover.cls requires fontspec.
+- Both compile with **tectonic** (self-contained XeTeX; downloads packages on first run). Run it from inside each directory so relative font paths resolve.
+- CV uses moderncv's `nosymbols` option — fontawesome5's OTF icons crash Tectonic 0.16.x with `Abort trap: 6`. Keep `nosymbols`; contact details render as `M`/`E` letter labels.
 
 If either compile fails, fix the error and re-compile until clean.
 

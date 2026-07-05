@@ -32,13 +32,13 @@ curl -fsSL https://bun.sh/install | bash
 
 ### LaTeX (for compiling CVs and cover letters)
 
-Install a LaTeX distribution to compile the generated `.tex` files to PDF:
+Install [Tectonic](https://tectonic-typesetting.github.io/), a self-contained XeTeX engine that auto-downloads the LaTeX packages it needs on first run — no full TeX distribution required:
 
-- **Windows:** [MiKTeX](https://miktex.org/download)
-- **macOS:** [MacTeX](https://tug.org/mactex/)
-- **Linux:** `sudo apt install texlive-full` or `sudo dnf install texlive-scheme-full`
+- **macOS:** `brew install tectonic`
+- **Windows:** see the [install guide](https://tectonic-typesetting.github.io/en-US/install.html) (`cargo install tectonic`, or a prebuilt binary)
+- **Linux:** `curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net | sh`, or your package manager
 
-The CV compiles with `lualatex` (pdflatex often fails on modern MiKTeX installs with `fontawesome5` font-expansion errors). The cover letter compiles with `xelatex` because `cover.cls` requires `fontspec` for its custom Lato/Raleway fonts.
+Both the CV and the cover letter compile with a single `tectonic <file>.tex` command. The CV uses `moderncv` with the `nosymbols` option: fontawesome5's OTF icons crash current Tectonic (0.16.x), so `nosymbols` renders contact details as `M`/`E` letter labels instead of icons. The cover letter uses `fontspec` with the bundled Lato/Raleway fonts in `cover_letters/OpenFonts/fonts/`.
 
 ## 2. Fork and clone
 
@@ -145,10 +145,10 @@ After `/apply` creates the LaTeX files:
 
 ```bash
 # Compile CV
-cd cv && lualatex main_<company>.tex && cd ..
+cd cv && tectonic main_<company>.tex && cd ..
 
 # Compile cover letter
-cd cover_letters && xelatex cover_<company>_<role>.tex && cd ..
+cd cover_letters && tectonic cover_<company>_<role>.tex && cd ..
 ```
 
 ## Troubleshooting
@@ -160,9 +160,9 @@ This is expected if you haven't set up salary benchmarking. The `/apply` workflo
 Make sure Bun is installed and you ran `bun install` in each CLI directory. The tools require network access to fetch job listings.
 
 ### LaTeX compilation errors
-- CV: uses `lualatex` (pdflatex often fails on modern MiKTeX with `fontawesome5` font-expansion errors; lualatex handles the same sources cleanly)
-- Cover letter: uses `xelatex` (for custom fonts in `OpenFonts/fonts/`)
-- Make sure your LaTeX distribution includes the `moderncv` package
+- Both CV and cover letter compile with `tectonic <file>.tex`. Tectonic downloads packages (including `moderncv`) automatically on first run, so the first compile needs network access.
+- Run `tectonic` from inside the `cv/` or `cover_letters/` directory — the cover letter's `cover.cls` references fonts by relative path (`OpenFonts/fonts/`).
+- CV crashes with `Abort trap: 6` in Tectonic: this is fontawesome5's OTF icons. The CV template ships with the `nosymbols` moderncv option to avoid it — don't remove that option.
 
 ### Fonts not found in cover letter
 The cover letter template expects fonts in `cover_letters/OpenFonts/fonts/`. Make sure this directory exists and contains the Lato and Raleway font files.

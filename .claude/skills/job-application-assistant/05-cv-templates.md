@@ -7,13 +7,13 @@
 All CVs use the moderncv LaTeX package with the "banking" style and "blue" color scheme.
 
 **Output file:** `cv/main_<company>.tex`
-**Compile with:** **lualatex** on MiKTeX/TeX Live. pdflatex often fails on modern MiKTeX installs with `fontawesome5` font-expansion errors; lualatex handles the same sources cleanly.
+**Compile with:** **tectonic** (`tectonic main_<company>.tex`, run from the `cv/` directory). Self-contained XeTeX engine; downloads packages on first run. The template uses moderncv's `nosymbols` option because fontawesome5's OTF icons crash Tectonic 0.16.x with `Abort trap: 6`.
 **Master reference:** `cv/main_example.tex` (comprehensive CV with all competencies, experience, and achievements - use as source when building targeted CVs)
 
 ### Compile command
 
 ```bash
-cd cv && lualatex -interaction=nonstopmode main_<company>.tex
+cd cv && tectonic main_<company>.tex
 ```
 
 Expected output: `Output written on main_<company>.pdf (2 pages, ...)`. Any page count other than 2 is a failure that must be fixed before presenting to the user.
@@ -21,27 +21,26 @@ Expected output: `Output written on main_<company>.pdf (2 pages, ...)`. Any page
 ## Document Structure
 
 ```latex
-\documentclass[11pt,a4paper,sans]{moderncv}
+\documentclass[11pt,a4paper,sans,nosymbols]{moderncv}
 \moderncvstyle{banking}
 \moderncvcolor{blue}
 
-% Force both first and last name AND section headings to render in moderncv
-% blue (color1). Default banking on lualatex+MiKTeX leaves these black, which
-% looks inconsistent with the rest of the blue accent scheme.
-\renewcommand*{\firstnamestyle}[1]{{\fontsize{34}{36}\bfseries\upshape\color{color1}#1}}
-\renewcommand*{\lastnamestyle}[1]{{\fontsize{34}{36}\bfseries\upshape\color{color1}#1}}
+% Force the name AND section headings to render in moderncv blue (color1).
+% moderncv 2.x uses \namestyle (the old \firstnamestyle/\lastnamestyle were
+% removed); default banking leaves these black, inconsistent with the blue scheme.
+\renewcommand*{\namestyle}[1]{{\fontsize{34}{36}\bfseries\upshape\color{color1}#1}}
 \renewcommand*{\sectionstyle}[1]{{\sectionfont\color{color1}#1}}
 
-\usepackage[utf8]{inputenc}
-\usepackage{hyperref}
-\hypersetup{
+% No inputenc: Tectonic/XeTeX is native UTF-8. moderncv 2.x loads hyperref
+% itself at end of preamble, so we don't reload it and defer \hypersetup.
+\AtBeginDocument{\hypersetup{
     colorlinks=true,
     linkcolor=blue,
     filecolor=magenta,
     urlcolor=blue,
     pdftitle={[YOUR_NAME] - CV},
     pdfpagemode=FullScreen,
-}
+}}
 \usepackage[scale=0.77]{geometry}
 \usepackage{import}
 
@@ -68,7 +67,7 @@ Expected output: `Output written on main_<company>.pdf (2 pages, ...)`. Any page
 
 ### Color overrides
 
-The three `\renewcommand*` lines in the preamble are required on lualatex+MiKTeX. Without them the firstname, lastname, and section headings render in black even though `\moderncvcolor{blue}` is set, which looks inconsistent with the rest of the blue accent scheme (links, bullet markers, contact icons). The override forces all three to use `color1` (moderncv's accent colour, which becomes blue under `\moderncvcolor{blue}`). Both names render bold; if you prefer the firstname in regular weight, change the firstnamestyle override from `\bfseries` to `\mdseries`. Don't drop the override - on most modern installs the defaults render visibly wrong.
+The two `\renewcommand*` lines in the preamble are required. Without them the name and section headings render in black even though `\moderncvcolor{blue}` is set, inconsistent with the rest of the blue accent scheme (links, bullet markers). `\namestyle` covers the whole name in moderncv 2.x (the old `\firstnamestyle`/`\lastnamestyle` no longer exist); `\sectionstyle` covers section headings. Both force `color1` (moderncv's accent colour, blue under `\moderncvcolor{blue}`). The name renders bold; for regular weight change `\bfseries` to `\mdseries`. Don't drop the overrides - defaults render visibly wrong.
 
 ### Spacing inside itemize lists (important)
 
@@ -150,7 +149,7 @@ If there is a gap in your employment history:
 
 After writing the CV and before presenting to the user, always compile and visually inspect the PDF. Iterate until the layout is clean. Workflow:
 
-1. Run `lualatex -interaction=nonstopmode main_<company>.tex`
+1. Run `tectonic main_<company>.tex` (from the `cv/` directory)
 2. Check the output page count: must be exactly 2
 3. Read the PDF via the Read tool and visually inspect both pages
 4. Check for **orphaned entries**: a `\cventry` title line must never sit alone at the bottom of page 1 with its bullets on page 2

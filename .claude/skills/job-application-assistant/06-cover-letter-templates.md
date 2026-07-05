@@ -1,17 +1,17 @@
 # Cover Letter Templates and Tailoring Guide
 
-## Template: Custom cover.cls (XeLaTeX)
+## Template: Custom cover.cls (fontspec/XeTeX)
 
 Cover letters use a custom LaTeX document class (`cover.cls`) with Lato/Raleway fonts.
 
 **Output file:** `cover_letters/cover_<company>_<role>.tex`
-**Compile with:** XeLaTeX (cover.cls requires fontspec)
+**Compile with:** tectonic (XeTeX engine; cover.cls requires fontspec). Run it from the `cover_letters/` directory so the relative font paths resolve.
 **Font directory:** `cover_letters/OpenFonts/fonts/`
 
 ### Compile command
 
 ```bash
-cd cover_letters && xelatex -interaction=nonstopmode cover_<company>_<role>.tex
+cd cover_letters && tectonic cover_<company>_<role>.tex
 ```
 
 Expected output: `Output written on cover_<company>_<role>.pdf (1 page, ...)`. Any page count other than 1 is a failure that must be fixed before presenting to the user.
@@ -20,7 +20,7 @@ Expected output: `Output written on cover_<company>_<role>.pdf (1 page, ...)`. A
 
 After writing the cover letter and before presenting to the user, always compile and visually inspect the PDF. Iterate until the layout is clean:
 
-1. Run `xelatex -interaction=nonstopmode cover_<company>_<role>.tex`
+1. Run `tectonic cover_<company>_<role>.tex` (from the `cover_letters/` directory)
 2. Confirm page count is exactly 1 and compile succeeded
 3. Read the PDF via the Read tool and visually check: signature fits at the bottom, no text cut off, bullet font matches body
 
